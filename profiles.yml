@@ -1,0 +1,6 @@
+transactpype:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: transactpype.duckdb
