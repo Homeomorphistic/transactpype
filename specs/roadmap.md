@@ -12,13 +12,15 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 - Git repo with initial commit
 - First `dbt build` runs green on the empty project
 
-## Phase 2 — Source Registration
+## Phase 2 — E/L Script & Source Registration
 
-- Register last month's Parquet file as a dbt external source
+- `scripts/extract.sql` (thin DuckDB SQL E/L, owned in this repo): pick the latest Excel export in `data/incoming/` by filename timestamp, read its 3 sheets (skip the one junk row per sheet), write 3 month-partitioned Parquet files `data/raw/<table>_YYYY-MM.parquet` — re-running on the same export overwrites that month (idempotent, no duplicates)
+- Makefile: `extract` (DuckDB CLI runs `scripts/extract.sql`) and `monthly` (extract + `dbt build`), failing fast on errors
+- Register every month of each table as a dbt external source via glob: `read_parquet('data/raw/{name}_*.parquet')`
 - Declare source columns and types explicitly (v2 static analysis does not infer Parquet schemas)
-- Verify declared columns and types against the file's embedded Parquet schema
-- Sanity check: query the source and confirm row count matches the upstream file
-- No load step — dbt reads what the E/L project already produced
+- Verify declared columns and types against the Parquet embedded schema
+- Sanity checks: row counts per source vs the month files; idempotency — re-running extraction does not duplicate rows
+- No load step in dbt — dbt reads what the extract script produced
 
 ## Phase 3 — Staging: Clean Transactions
 

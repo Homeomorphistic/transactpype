@@ -1,8 +1,11 @@
 ## Project in one paragraph
 dbt modeling layer that turns already-loaded family expenses data
 (DuckDB) into a clean, tested analytical model. **Hard boundary:
-transform-only.** Extraction/loading and dashboards are separate
-projects — never do either here.
+dbt never extracts or loads.** The only E/L step is the thin DuckDB
+SQL script `scripts/extract.sql` in this repo (monthly Excel export
+in `data/incoming/` → month-partitioned Parquet in `data/raw/`);
+dbt registers those files as external sources and only models.
+Dashboards are a separate project — never do them here.
 
 ## Constitution (specs/) — read on trigger, not every task
 - `specs/mission.md` — read before any scope decision: new layers,
