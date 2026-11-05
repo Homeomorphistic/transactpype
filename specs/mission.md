@@ -2,7 +2,7 @@
 Raw bank transaction data answers no questions on its own. TransactPype turns the family's unshaped expenses data into a source of truth the whole family can trust.
 
 ## What We Do
-Transform raw, already-loaded data into a clean, tested analytical model using dbt. The boundary is explicit: this project starts where the upstream E/L project ends — it never extracts or loads anything, it only models. Future projects (dashboards, ML) build on top.
+Transform raw, already-loaded data into a clean, tested analytical model using dbt. The boundary is explicit: **dbt never extracts or loads** — the only E/L step is a thin DuckDB SQL script (`scripts/extract.sql`) owned in this repo, which turns each monthly Excel export into month-partitioned Parquet under `data/raw/`; dbt registers those files as external sources and only models from them. Future projects (dashboards, ML) build on top.
 
 ## Who We Serve
 Bartosz (builder/analyst), partner & family (budget decisions), and future projects (cashflow prediction, ML) as downstream consumers.
